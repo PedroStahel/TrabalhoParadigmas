@@ -1,7 +1,7 @@
 import java.util.Random;
 import java.util.List;
 
-public abstract class Jogador extends Personagem {
+public abstract class Jogador extends Personagem implements Curavel {
     @Override
     public boolean atacar( Personagem alvo, Setor setor ) {
         if ( alvo == null )
@@ -20,6 +20,12 @@ public abstract class Jogador extends Personagem {
             }
 
         return false;
+    }
+
+    @Override
+    public void recuperarDefesa( int qtd ) {
+        if ( this.estaVivo() )
+            this.recuperaDefesa( qtd );
     }
 
     public int procurar( Setor setor ) {
@@ -51,11 +57,24 @@ public abstract class Jogador extends Personagem {
             List<Inimigo> inimigosSetor = setor.getInimigos();
             
             for ( Inimigo inimigo : inimigosSetor ) {
-                if ( inimigos.estaVivo() )
-                    inimigos.receberDano( 1 );
+                if ( inimigo.estaVivo() )
+                    inimigo.receberDano( 1 );
             }
             return dado;
         }
     }
 
+    public boolean podeSairDoSetor( Setor setor ) { // Ainda assim o jogo precisa verificar portas e afins pra mover o personagem.
+        if ( setor == null )
+            return false;
+
+        if ( !this.estaVivo() )
+            return false;
+
+        return !setor.possuiInimigosVivos();
+    }
+
+    protected Jogador( int ataque, int defesa, Posicao posicao ) {
+        super( ataque, defesa, posicao );
+    }
 }
