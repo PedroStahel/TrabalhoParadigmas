@@ -7,7 +7,7 @@ public class Posicao {
 
     public Posicao(int x, int y) {
         if (!ehValida(x, y)) {
-            throw new IllegalArgumentException("Posição fora do tabuleiro: [" + x + "," + y + "].");
+            throw new ArgumentoInvalido("Posição fora do tabuleiro: [" + x + "," + y + "].");
         }
 
         this.x = x;
