@@ -122,7 +122,7 @@ public class Jogo {
         else if ( dado == 5 )
             System.out.println(nome + " encontrou +2 de DEF! Agora tem " + jogador.getDefesa());
         else
-            System.out.println(nome + "encontrou um antivírus! Todos os inimigos do setor perdem 1 de DEF");
+            System.out.println(nome + " encontrou um antivírus! Todos os inimigos do setor perdem 1 de DEF");
     }
 
     private void acaoAtacar(Jogador jogador, String nome, Setor setor) {
@@ -277,11 +277,11 @@ public class Jogo {
                         boolean acertou = inimigo.atacar(alvo, setor);
 
                         if (!acertou) 
-                            System.out.println("Inimigo " + numInimigo + " errou o ataque em " + nome);
+                            System.out.println("Inimigo " + numInimigo + " errou o ataque ao " + nome + " no setor " + alvo.getPosicao());
                         else if ( !alvo.estaVivo() ) 
-                            System.out.println("Inimigo " + numInimigo + " eliminou o jogador " + nome);
+                            System.out.println("Inimigo " + numInimigo + " eliminou o jogador " + nome + " no setor " + alvo.getPosicao());
                         else
-                            System.out.println("Inimigo " + numInimigo + " acertou o ataque em " + nome + ". DEF restante: " + alvo.getDefesa());
+                            System.out.println("Inimigo " + numInimigo + " acertou o ataque em " + nome + " no setor " + alvo.getPosicao() + ". DEF restante: " + alvo.getDefesa());
                     }
                 }
             }
