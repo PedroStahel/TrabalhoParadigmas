@@ -9,7 +9,7 @@ public class Jogo {
     private Tabuleiro tabuleiro;
     private JogadorSimples p1;
     private JogadorSuporte p2;
-    private ArrayList<Jogador> jogadores;
+    private List<Jogador> jogadores;
     private Scanner scanner;
     private int ciclo;
     private boolean fonteEncontrada;
