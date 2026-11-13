@@ -79,14 +79,17 @@ public class Jogo {
         return direcao;
     }
 
-    private int escolherAcao(Setor setor) {
-        while ( true ) {
+    private int escolherAcao(Jogador jogador, Setor setor) {
+        boolean jogadorPodeCurar = jogador instanceof JogadorSuporte;
+        while ( true ) { 
             // mostra só as opções disponíveis
             System.out.println("0 - Passar");
             if ( setor.possuiInimigosVivos() )   
                 System.out.println("1 - Atacar");
             if ( setor.permiteProcurar() ) 
                 System.out.println("2 - Procurar");
+            if ( jogadorPodeCurar ) 
+                System.out.println("3 - Curar");
             
             System.out.print("Escolha: ");
 
@@ -97,6 +100,9 @@ public class Jogo {
 
             if ( resposta.equals("2") && setor.permiteProcurar() )     
                 return 2;
+
+            if ( resposta.equals("3") && jogadorPodeCurar )
+                return 3;
 
             if ( resposta.equals("0") )                 
                 return 0;
@@ -156,16 +162,40 @@ public class Jogo {
             System.out.println(nome + " acertou o inimigo " + escolha + ". "+ alvo.getDefesa() + " de DEF restante.");  
     }
 
+    private void acaoCurar(JogadorSuporte suporte, String nome) {
+        // o P1 só pode ser curado se estiver vivo E no mesmo setor
+        boolean podeCurarP1 = this.p1.estaVivo() && this.p1.getPosicao().equals( suporte.getPosicao() );
+
+        System.out.println("1 - Curar a si mesmo (" + nome + ")");
+        if ( podeCurarP1 )
+            System.out.println("2 - Curar P1");
+
+        Jogador alvo = null;
+        while ( alvo == null ) {
+            System.out.print("Quem curar? ");
+            String resposta = scanner.nextLine().trim();
+
+            if ( resposta.equals("1") )
+                alvo = suporte;
+            else if ( resposta.equals("2") && podeCurarP1 )
+                alvo = this.p1;
+            else
+                System.out.println("Opção inválida.");
+        }
+
+        suporte.usarHabilidade(alvo);
+        System.out.println(nome + " curou! DEF agora: " + alvo.getDefesa());
+    }
+
     private void turnoJogador(Jogador jogador, String nome) {
-        // Jogador morto não tem turno
-        if ( !jogador.estaVivo() ) {
+        if ( !jogador.estaVivo() ) { // Jogador morto não tem turno
             System.out.printf("Jogador %s foi eliminado!\n", nome);
             return;
         }
         
-        // renderiza o tabuleiro
+       
         System.out.println("Turno de " + nome);  
-        this.tabuleiro.desenhar(jogadores);
+        this.tabuleiro.desenhar(jogadores); // renderiza o tabuleiro
 
         Setor setor = this.tabuleiro.getSetor(jogador.getPosicao());
 
@@ -202,12 +232,16 @@ public class Jogo {
             System.out.println("--- Ação " + acao + " de 2 ---");
             Setor atual = this.tabuleiro.getSetor(jogador.getPosicao());
 
-            int opcao = escolherAcao(atual);
+            int opcao = escolherAcao(jogador, atual);
 
             if ( opcao == 1 )
                 acaoAtacar(jogador, nome, atual);
             else if ( opcao == 2 )
                 acaoProcurar(jogador, nome, atual);
+            else if ( opcao == 3 ) {
+                JogadorSuporte suporte = ( JogadorSuporte ) jogador;
+                acaoCurar(suporte, nome);
+            } 
             else
                 System.out.println(nome + " passou a ação.");
         }
