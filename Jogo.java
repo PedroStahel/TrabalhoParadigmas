@@ -79,6 +79,55 @@ public class Jogo {
         return direcao;
     }
 
+    private int escolherAcao(Setor setor) {
+        while ( true ) {
+            // mostra só as opções disponíveis
+            System.out.println("0 - Passar");
+            if ( setor.possuiInimigosVivos() )   
+                System.out.println("1 - Atacar");
+            if ( setor.permiteProcurar() ) 
+                System.out.println("2 - Procurar");
+            
+            System.out.print("Escolha: ");
+
+            String resposta = scanner.nextLine().trim();
+
+            if ( resposta.equals("1") && setor.possuiInimigosVivos() )   
+                return 1;
+
+            if ( resposta.equals("2") && setor.permiteProcurar() )     
+                return 2;
+
+            if ( resposta.equals("0") )                 
+                return 0;
+
+            System.out.println("Opção inválida ou indisponível.");
+        }
+    }
+
+    private void acaoProcurar(Jogador jogador, String nome, Setor setor) {
+        int dado = jogador.procurar(setor);     
+
+        if ( dado == -1 )
+            System.out.println("Não é possível procurar aqui.");
+        else if ( dado <= 3 )
+            System.out.println(nome + " procurou e não encontrou nada.");
+        else if ( dado == 4 )
+            System.out.println(nome + " encontrou +1 de DEF! Agora tem " + jogador.getDefesa());
+        else if ( dado == 5 )
+            System.out.println(nome + " encontrou +2 de DEF! Agora tem " + jogador.getDefesa());
+        else
+            System.out.println(nome + "encontrou um antivírus! Todos os inimigos do setor perdem 1 de DEF");
+    }
+
+    private void acaoAtacar(Jogador jogador, Setor setor) {
+
+    }
+
+    private void acaoCurar(Jogador jogador, Setor setor) {
+
+    }
+
     private void turnoJogador(Jogador jogador, String nome) {
         // Jogador morto não tem turno
         if ( !jogador.estaVivo() ) {
@@ -120,6 +169,20 @@ public class Jogo {
             }
         } else 
             System.out.println("Há inimigos vivos no setor, não é possível sair!");
+
+        for ( int acao = 1; acao <= 2; acao++ ) {
+            System.out.println("--- Ação " + acao + " de 2 ---");
+            Setor atual = this.tabuleiro.getSetor(jogador.getPosicao());
+
+            int opcao = escolherAcao(atual);
+
+            if ( opcao == 1 )
+                acaoAtacar(jogador, atual);
+            else if ( opcao == 2 )
+                acaoProcurar(jogador, nome, atual);
+            else
+                System.out.println(nome + " passou a ação.");
+        }
     }
 
     private void turnoInimigos() {
