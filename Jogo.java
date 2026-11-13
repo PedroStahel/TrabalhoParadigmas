@@ -120,12 +120,40 @@ public class Jogo {
             System.out.println(nome + "encontrou um antivírus! Todos os inimigos do setor perdem 1 de DEF");
     }
 
-    private void acaoAtacar(Jogador jogador, Setor setor) {
+    private void acaoAtacar(Jogador jogador, String nome, Setor setor) {
+        List<Inimigo> vivos = new ArrayList<>();
+        for ( Inimigo inimigo : setor.getInimigos() ) {
+            if ( inimigo.estaVivo() )
+                vivos.add(inimigo);
+        }
 
-    }
+        for ( int i = 0; i < vivos.size(); i++ ) {
+            Inimigo inimigo = vivos.get(i);
+            System.out.println( (i + 1) + " - Inimigo " + inimigo.getAtaque() + "/" + inimigo.getDefesa() );
+        }
 
-    private void acaoCurar(Jogador jogador, Setor setor) {
+        int escolha = 0;
+        while ( true ) {
+            System.out.print("Qual inimigo atacar? ");
+            try {
+                escolha = Integer.parseInt( scanner.nextLine().trim() );
+                if ( escolha >= 1 && escolha <= vivos.size() )
+                    break;                              // se é válido, sai do while
+                System.out.println("Número fora da lista.");
+            } catch ( NumberFormatException e ) {       // digitou letra
+                System.out.println("Digite um número.");
+            }
+        }
+        Inimigo alvo = vivos.get( escolha - 1 );  
+        
+        boolean acertou = jogador.atacar(alvo, setor);   
 
+        if ( !acertou )
+            System.out.println(nome + " errou o ataque!");   // acontece no setor oculto
+        else if ( !alvo.estaVivo() )
+            System.out.println(nome + " eliminou o inimigo " + escolha);   // eliminou o inimigo
+        else
+            System.out.println(nome + " acertou o inimigo " + escolha + ". "+ alvo.getDefesa() + " de DEF restante.");  
     }
 
     private void turnoJogador(Jogador jogador, String nome) {
@@ -177,7 +205,7 @@ public class Jogo {
             int opcao = escolherAcao(atual);
 
             if ( opcao == 1 )
-                acaoAtacar(jogador, atual);
+                acaoAtacar(jogador, nome, atual);
             else if ( opcao == 2 )
                 acaoProcurar(jogador, nome, atual);
             else
