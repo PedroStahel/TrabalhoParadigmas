@@ -194,7 +194,7 @@ public class Jogo {
         
        
         this.tabuleiro.desenhar(jogadores); // renderiza o tabuleiro
-        System.out.println("===== Turno do " + nome + "=====");  
+        System.out.println("===== Turno do " + nome + " =====");  
 
         Setor setor = this.tabuleiro.getSetor(jogador.getPosicao());
 
@@ -264,7 +264,7 @@ public class Jogo {
                 if (!inimigo.estaVivo()) 
                     continue;
                 numInimigo++;
-                
+
                 for (Jogador alvo : jogadores) {
                     String nome;
                     if (alvo == p1)
