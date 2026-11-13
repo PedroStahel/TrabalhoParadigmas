@@ -13,6 +13,7 @@ public class Jogo {
     private Scanner scanner;
     private int ciclo;
     private boolean fonteEncontrada;
+    private String vencedor;
 
     // construtores
     public Jogo() {
@@ -26,6 +27,7 @@ public class Jogo {
         this.scanner = new Scanner(System.in);
         this.ciclo = 1;
         this.fonteEncontrada = false;
+        this.vencedor = null;
     }
 
     public void jogar() {
@@ -59,6 +61,22 @@ public class Jogo {
         return false;
     }
 
+    private Direcao lerDirecao() {
+        Direcao direcao = null;
+
+        while ( direcao == null ) {
+            System.out.print("Direção (N/S/L/O): ");
+
+            try {
+                direcao = Direcao.daLetra( this.scanner.nextLine() );
+            } catch (ArgumentoInvalido e) {
+                System.out.println( e.getMessage() );
+            }
+        }
+
+        return direcao;
+    }
+
     private void turnoJogador(Jogador jogador, String nome) {
         // Jogador morto não tem turno
         if ( !jogador.estaVivo() ) {
@@ -72,9 +90,24 @@ public class Jogo {
 
         Setor setor = this.tabuleiro.getSetor(jogador.getPosicao());
 
-        if ( this.perguntarSimNao("Deseja Mover? (S/N): ") ) { 
-            System.out.println("Vou mover");
-        }
+        if ( !setor.possuiInimigosVivos() ) { 
+            if ( this.perguntarSimNao("Deseja Mover? (S/N): ") ) { 
+                Direcao direcao = lerDirecao();
+                if( this.tabuleiro.moverJogador(jogador, direcao) ) {
+                    System.out.println("Jogador " + nome + " foi para " + jogador.getPosicao() );
+
+                    this.tabuleiro.desenhar(jogadores);
+
+                    setor = this.tabuleiro.getSetor(jogador.getPosicao());
+                    if ( setor.isContemFonte() ) {
+                        this.fonteEncontrada = true;
+                        this.vencedor = nome;
+                        return;
+                    }
+                }
+            }
+        } else 
+            System.out.println("Há inimigos vivos no setor, não é possível sair!");
     }
 
     private void turnoInimigos() {
@@ -89,7 +122,7 @@ public class Jogo {
 
     private void mostrarResultado() {
         if ( this.fonteEncontrada )
-            System.out.println("A fonte foi encontrada... Os jogadores venceram!");
+            System.out.println(this.vencedor + " encontrou a fonte... Os jogadores venceram!");
         else if ( !this.p1.estaVivo() && !this.p2.estaVivo() )
             System.out.println("Os jogadores morreram... Os inimigos venceram!");
         else if ( this.ciclo > MAX_CICLOS )
