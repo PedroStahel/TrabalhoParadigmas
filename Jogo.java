@@ -35,8 +35,10 @@ public class Jogo {
         while ( !this.jogoAcabou() ){
             System.out.println("===== Ciclo " + this.ciclo + " =====");
             this.turnoJogador(p1, "P1");
-            this.turnoJogador(p2,"P2");
-            this.turnoInimigos();
+            if ( !this.jogoAcabou() )
+                this.turnoJogador(p2,"P2");
+            if ( !this.jogoAcabou() )
+                this.turnoInimigos();
             this.ciclo++;
         } 
         this.mostrarResultado();
@@ -92,17 +94,27 @@ public class Jogo {
 
         if ( !setor.possuiInimigosVivos() ) { 
             if ( this.perguntarSimNao("Deseja Mover? (S/N): ") ) { 
-                Direcao direcao = lerDirecao();
-                if( this.tabuleiro.moverJogador(jogador, direcao) ) {
-                    System.out.println("Jogador " + nome + " foi para " + jogador.getPosicao() );
+                boolean moveu = false;
+                boolean querTentar = true;
 
-                    this.tabuleiro.desenhar(jogadores);
+                while (!moveu && querTentar) {
+                    Direcao direcao = lerDirecao();
+                    if( this.tabuleiro.moverJogador(jogador, direcao) ) {
+                        System.out.println("Jogador " + nome + " foi para " + jogador.getPosicao() );
 
-                    setor = this.tabuleiro.getSetor(jogador.getPosicao());
-                    if ( setor.isContemFonte() ) {
-                        this.fonteEncontrada = true;
-                        this.vencedor = nome;
-                        return;
+                        this.tabuleiro.desenhar(jogadores);
+
+                        moveu = true;
+                        setor = this.tabuleiro.getSetor(jogador.getPosicao());
+                        
+                        if ( setor.isContemFonte() ) {
+                            this.fonteEncontrada = true;
+                            this.vencedor = nome;
+                            return;
+                        }
+                    } else {
+                        System.out.println("Não há porta nessa direção!");
+                        querTentar = perguntarSimNao("Tentar outra direção? (S/N): ");
                     }
                 }
             }
