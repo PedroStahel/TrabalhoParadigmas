@@ -31,7 +31,6 @@ public class Jogo {
     }
 
     public void jogar() {
-        System.out.println("Jogo começando");
         while ( !this.jogoAcabou() ){
             System.out.println("===== Ciclo " + this.ciclo + " =====");
             this.turnoJogador(p1, "P1");
@@ -194,8 +193,8 @@ public class Jogo {
         }
         
        
-        System.out.println("Turno de " + nome);  
         this.tabuleiro.desenhar(jogadores); // renderiza o tabuleiro
+        System.out.println("===== Turno do " + nome + "=====");  
 
         Setor setor = this.tabuleiro.getSetor(jogador.getPosicao());
 
@@ -248,7 +247,45 @@ public class Jogo {
     }
 
     private void turnoInimigos() {
-        System.out.println("Turno dos inimigos");  
+        System.out.println("===== Turno dos inimigos =====");
+        List<Setor> processados = new ArrayList<Setor>();
+
+        for (Jogador j : this.jogadores) {
+            if ( !j.estaVivo() )   // jogador morto não chama inimigo
+                continue;          
+                 
+            Setor setor = tabuleiro.getSetor(j.getPosicao());
+            if ( processados.contains(setor) ) 
+                continue;   // esse setor já atacou
+            processados.add(setor);
+
+            int numInimigo = 0;
+            for (Inimigo inimigo : setor.getInimigos()) {
+                if (!inimigo.estaVivo()) 
+                    continue;
+                numInimigo++;
+                
+                for (Jogador alvo : jogadores) {
+                    String nome;
+                    if (alvo == p1)
+                        nome = "P1";
+                    else
+                        nome = "P2";
+
+                    // o alvo precisa estar vivo e no mesmo setor
+                    if (alvo.estaVivo() && alvo.getPosicao().equals(setor.getPosicao())) {
+                        boolean acertou = inimigo.atacar(alvo, setor);
+
+                        if (!acertou) 
+                            System.out.println("Inimigo " + numInimigo + " errou o ataque em " + nome);
+                        else if ( !alvo.estaVivo() ) 
+                            System.out.println("Inimigo " + numInimigo + " eliminou o jogador " + nome);
+                        else
+                            System.out.println("Inimigo " + numInimigo + " acertou o ataque em " + nome + ". DEF restante: " + alvo.getDefesa());
+                    }
+                }
+            }
+        }
     }
 
     private boolean jogoAcabou() {
