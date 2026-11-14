@@ -317,9 +317,7 @@ public class Jogo {
 
     // Método retorna true se uma das condições de fim de jogo forem satisfeitas, e false caso contrário
     private boolean jogoAcabou() {
-        if ( this.fonteEncontrada || this.ciclo > MAX_CICLOS || (!this.p1.estaVivo() && !this.p2.estaVivo()) )
-            return true;
-        return false;
+        return ( this.fonteEncontrada || this.ciclo > MAX_CICLOS || (!this.p1.estaVivo() && !this.p2.estaVivo()) );
     }
 
     // Método mostra o resultado do jogo 
