@@ -115,7 +115,7 @@ public class Jogo {
         }
     }
 
-    // Método executa o método procurar() e mostra o resultado a procura
+    // Método executa o método procurar() e mostra o resultado da procura
     private void acaoProcurar(Jogador jogador, String nome, Setor setor) {
         int dado = jogador.procurar(setor);     
 
@@ -200,7 +200,7 @@ public class Jogo {
     }
 
     // Método que executa o turno de um jogador
-    // Diponhe as ações na ordem: movimento -> ação -> ação
+    // Dispõe as ações na ordem: movimento -> ação -> ação
     private void turnoJogador(Jogador jogador, String nome) {
         
         // Jogador morto não tem turno
