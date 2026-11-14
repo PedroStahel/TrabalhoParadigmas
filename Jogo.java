@@ -78,8 +78,8 @@ public class Jogo {
         return direcao;
     }
 
-    private int escolherAcao(Jogador jogador, Setor setor) {
-        boolean jogadorPodeCurar = jogador instanceof JogadorSuporte;
+    private int escolherAcao(Jogador jogador, Setor setor, int acao) {
+        boolean jogadorPodeCurar = jogador instanceof JogadorSuporte && acao == 1;
         while ( true ) { 
             // mostra só as opções disponíveis
             System.out.println("0 - Passar");
@@ -231,7 +231,7 @@ public class Jogo {
             System.out.println("--- Ação " + acao + " de 2 ---");
             Setor atual = this.tabuleiro.getSetor(jogador.getPosicao());
 
-            int opcao = escolherAcao(jogador, atual);
+            int opcao = escolherAcao(jogador, atual, acao);
 
             if ( opcao == 1 )
                 acaoAtacar(jogador, nome, atual);
@@ -240,6 +240,7 @@ public class Jogo {
             else if ( opcao == 3 ) {
                 JogadorSuporte suporte = ( JogadorSuporte ) jogador;
                 acaoCurar(suporte, nome);
+                break; // curar consome duas ações
             } 
             else
                 System.out.println(nome + " passou a ação.");
