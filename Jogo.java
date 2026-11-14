@@ -15,7 +15,7 @@ public class Jogo {
     private boolean fonteEncontrada;
     private String vencedor;
 
-    // construtores
+    // construtor
     public Jogo() {
         this.tabuleiro = new Tabuleiro();
         Posicao centro = this.tabuleiro.setorCentral().getPosicao();
@@ -30,6 +30,7 @@ public class Jogo {
         this.vencedor = null;
     }
 
+    // Método de controle do jogo, mantém o laço dos turnos até o jogo acabar
     public void jogar() {
         while ( !this.jogoAcabou() ){
             System.out.println("===== Ciclo " + this.ciclo + " =====");
@@ -62,6 +63,7 @@ public class Jogo {
         return false;
     }
 
+    // Método para ler a direção digitada pelo usuário, que garante que seja N/S/L/O com o try catch e o método daLetra()
     private Direcao lerDirecao() {
         Direcao direcao = null;
 
@@ -78,6 +80,9 @@ public class Jogo {
         return direcao;
     }
 
+    // Método de escolha da ação do usuário 
+    // Verifica as possibilidades de ação do jogador e mostra apenas as disponiveis
+    // Retorna a opção escolhida pelo usuário
     private int escolherAcao(Jogador jogador, Setor setor, int acao) {
         boolean jogadorPodeCurar = jogador instanceof JogadorSuporte && acao == 1;
         while ( true ) { 
@@ -110,6 +115,7 @@ public class Jogo {
         }
     }
 
+    // Método executa o método procurar() e mostra o resultado a procura
     private void acaoProcurar(Jogador jogador, String nome, Setor setor) {
         int dado = jogador.procurar(setor);     
 
@@ -125,19 +131,23 @@ public class Jogo {
             System.out.println(nome + " encontrou um antivírus! Todos os inimigos do setor perdem 1 de DEF");
     }
 
+    // Método mostra os inimigos disponiveis para atacar e garante que o usuário faça uma escolha válida
+    // Executa o método atacar() e mostra o resultado do ataque
     private void acaoAtacar(Jogador jogador, String nome, Setor setor) {
         List<Inimigo> vivos = new ArrayList<>();
-        for ( Inimigo inimigo : setor.getInimigos() ) {
+
+        for ( Inimigo inimigo : setor.getInimigos() ) { // preenche a lista de inimigos vivos
             if ( inimigo.estaVivo() )
                 vivos.add(inimigo);
         }
 
-        for ( int i = 0; i < vivos.size(); i++ ) {
+        for ( int i = 0; i < vivos.size(); i++ ) { // mostra inimigos disponíveis para a ação
             Inimigo inimigo = vivos.get(i);
             System.out.println( (i + 1) + " - Inimigo " + inimigo.getAtaque() + "/" + inimigo.getDefesa() );
         }
 
         int escolha = 0;
+        // while garante a escolha válida por meio do try catch
         while ( true ) {
             System.out.print("Qual inimigo atacar? ");
             try {
@@ -156,11 +166,14 @@ public class Jogo {
         if ( !acertou )
             System.out.println(nome + " errou o ataque!");   // acontece no setor oculto
         else if ( !alvo.estaVivo() )
-            System.out.println(nome + " eliminou o inimigo " + escolha);   // eliminou o inimigo
+            System.out.println(nome + " eliminou o inimigo " + escolha);  
         else
             System.out.println(nome + " acertou o inimigo " + escolha + ". "+ alvo.getDefesa() + " de DEF restante.");  
     }
 
+    // Método verifica se o jogador simples está disponível para cura
+    // Garante que o usuário dê uma entrada válida e define o alvo
+    // Executa o método usarHabilidade() e mostra quem foi curado e o resultado da cura
     private void acaoCurar(JogadorSuporte suporte, String nome) {
         // o P1 só pode ser curado se estiver vivo E no mesmo setor
         boolean podeCurarP1 = this.p1.estaVivo() && this.p1.getPosicao().equals( suporte.getPosicao() );
@@ -170,7 +183,7 @@ public class Jogo {
             System.out.println("2 - Curar P1");
 
         Jogador alvo = null;
-        while ( alvo == null ) {
+        while ( alvo == null ) { 
             System.out.print("Quem curar? ");
             String resposta = scanner.nextLine().trim();
 
@@ -186,23 +199,29 @@ public class Jogo {
         System.out.println(nome + " curou! DEF agora: " + alvo.getDefesa());
     }
 
+    // Método que executa o turno de um jogador
+    // Diponhe as ações na ordem: movimento -> ação -> ação
     private void turnoJogador(Jogador jogador, String nome) {
-        if ( !jogador.estaVivo() ) { // Jogador morto não tem turno
+        
+        // Jogador morto não tem turno
+        if ( !jogador.estaVivo() ) { 
             System.out.printf("Jogador %s foi eliminado!\n", nome);
             return;
         }
         
-       
-        this.tabuleiro.desenhar(jogadores); // renderiza o tabuleiro
+        // renderiza o tabuleiro
+        this.tabuleiro.desenhar(jogadores); 
         System.out.println("===== Turno do " + nome + " =====");  
 
         Setor setor = this.tabuleiro.getSetor(jogador.getPosicao());
 
+        // movimento só é permitido se o setor está sem inimigos
         if ( !setor.possuiInimigosVivos() ) { 
             if ( this.perguntarSimNao("Deseja Mover? (S/N): ") ) { 
                 boolean moveu = false;
                 boolean querTentar = true;
 
+                // laço para garantir o movimento/opção do jogador em caso de uma escolha de direção sem portas
                 while (!moveu && querTentar) {
                     Direcao direcao = lerDirecao();
                     if( this.tabuleiro.moverJogador(jogador, direcao) ) {
@@ -225,8 +244,9 @@ public class Jogo {
                 }
             }
         } else 
-            System.out.println("Há inimigos vivos no setor, não é possível sair!");
+            System.out.println("Há inimigos vivos no setor, não é possível sair!\n");
 
+        // define as ações possiveis e tomadas
         for ( int acao = 1; acao <= 2; acao++ ) {
             System.out.println("--- Ação " + acao + " de 2 ---");
             Setor atual = this.tabuleiro.getSetor(jogador.getPosicao());
@@ -244,29 +264,35 @@ public class Jogo {
             } 
             else
                 System.out.println(nome + " passou a ação.");
+            System.out.println();
         }
     }
 
+    // Método de execução do turno dos inimigos de cada setor dos jogadores
     private void turnoInimigos() {
         System.out.println("===== Turno dos inimigos =====");
         List<Setor> processados = new ArrayList<Setor>();
 
         for (Jogador j : this.jogadores) {
-            if ( !j.estaVivo() )   // jogador morto não chama inimigo
+            // jogador morto não chama inimigo
+            if ( !j.estaVivo() )   
                 continue;          
                  
             Setor setor = tabuleiro.getSetor(j.getPosicao());
+            // esse setor já atacou
             if ( processados.contains(setor) ) 
-                continue;   // esse setor já atacou
+                continue;   
             processados.add(setor);
 
             int numInimigo = 0;
+            // executa o ataque de cada inimigo do setor
             for (Inimigo inimigo : setor.getInimigos()) {
                 if (!inimigo.estaVivo()) 
                     continue;
                 numInimigo++;
 
-                for (Jogador alvo : jogadores) {
+                // executa o ataque em cada jogador, se estiverem no mesmo setor
+                for (Jogador alvo : this.jogadores) {
                     String nome;
                     if (alvo == p1)
                         nome = "P1";
@@ -289,12 +315,14 @@ public class Jogo {
         }
     }
 
+    // Método retorna true se uma das condições de fim de jogo forem satisfeitas, e false caso contrário
     private boolean jogoAcabou() {
         if ( this.fonteEncontrada || this.ciclo > MAX_CICLOS || (!this.p1.estaVivo() && !this.p2.estaVivo()) )
             return true;
         return false;
     }
 
+    // Método mostra o resultado do jogo 
     private void mostrarResultado() {
         if ( this.fonteEncontrada )
             System.out.println(this.vencedor + " encontrou a fonte... Os jogadores venceram!");
