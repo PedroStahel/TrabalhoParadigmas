@@ -70,7 +70,7 @@ public class Jogo {
 
             try {
                 direcao = Direcao.daLetra( this.scanner.nextLine() );
-            } catch (ArgumentoInvalido e) {
+            } catch (IllegalArgumentException e) {
                 System.out.println( e.getMessage() );
             }
         }

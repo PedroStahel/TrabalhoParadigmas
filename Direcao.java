@@ -45,7 +45,7 @@ public class Direcao {
 
     public static Direcao daLetra(String letra) {
         if (letra == null) {
-            throw new ArgumentoInvalido("Digite uma direção: N, S, L ou O.");
+            throw new IllegalArgumentException("Digite uma direção: N, S, L ou O.");
         }
 
         String limpa = letra.trim().toUpperCase();
@@ -59,7 +59,7 @@ public class Direcao {
         } else if (limpa.equals("O")) {
             return OESTE;
         } else {
-            throw new ArgumentoInvalido("Direção inválida: \"" + letra + "\". Use N, S, L ou O.");
+            throw new IllegalArgumentException("Direção inválida: \"" + letra + "\". Use N, S, L ou O.");
         }
     }
 }

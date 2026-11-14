@@ -40,7 +40,7 @@ public class Tabuleiro {
 
     public Setor getSetor(Posicao posicao) {
         if (posicao == null) {
-            throw new ArgumentoInvalido("A posição não pode ser nula.");
+            throw new IllegalArgumentException("A posição não pode ser nula.");
         }
 
         return this.setores[posicao.getX() - 1][posicao.getY() - 1];
@@ -57,7 +57,7 @@ public class Tabuleiro {
     // diz se o setor nessa posição tem porta na direção pedida
     public boolean temPorta(Posicao posicao, Direcao direcao) {
         if (direcao == null) {
-            throw new ArgumentoInvalido("A direção não pode ser nula.");
+            throw new IllegalArgumentException("A direção não pode ser nula.");
         }
 
         return getSetor(posicao).getPortas()[direcao.getIndicePorta()];
@@ -67,7 +67,7 @@ public class Tabuleiro {
 
     public boolean moverJogador(Jogador jogador, Direcao direcao) {
         if (jogador == null) {
-            throw new ArgumentoInvalido("O jogador não pode ser nulo.");
+            throw new IllegalArgumentException("O jogador não pode ser nulo.");
         }
 
         Posicao origem = jogador.getPosicao();
@@ -180,12 +180,12 @@ public class Tabuleiro {
 
                         // regra 1: a borda do tabuleiro é sempre parede
                         if (vizinha == null) {
-                            throw new EstadoInvalido("Mapa inválido: porta na borda em " + posicao + ".");
+                            throw new IllegalStateException("Mapa inválido: porta na borda em " + posicao + ".");
                         }
 
                         // regra 2: a porta precisa existir dos dois lados
                         if (!temPorta(vizinha, direcao.oposta())) {
-                            throw new EstadoInvalido("Mapa inválido: porta entre " + posicao + " e " + vizinha + " só existe de um lado.");
+                            throw new IllegalStateException("Mapa inválido: porta entre " + posicao + " e " + vizinha + " só existe de um lado.");
                         }
                     }
                 }
@@ -196,13 +196,13 @@ public class Tabuleiro {
         for (int i = 0; i < DIRECOES.length; i++) {
             Direcao direcao = DIRECOES[i];
             if (!temPorta(CENTRO, direcao)) {
-                throw new EstadoInvalido("Mapa inválido: o centro precisa ter as 4 portas.");
+                throw new IllegalStateException("Mapa inválido: o centro precisa ter as 4 portas.");
             }
         }
 
         // regra 4: dá para chegar em todas as casas a partir do centro
         if (!todosAlcancaveis()) {
-            throw new EstadoInvalido("Mapa inválido: existem setores que não podem ser alcançados a partir do centro.");
+            throw new IllegalStateException("Mapa inválido: existem setores que não podem ser alcançados a partir do centro.");
         }
     }
 
@@ -239,7 +239,7 @@ public class Tabuleiro {
 
     public void desenhar(List<Jogador> jogadores) {
         if (jogadores == null) {
-            throw new ArgumentoInvalido("A lista de jogadores não pode ser nula.");
+            throw new IllegalArgumentException("A lista de jogadores não pode ser nula.");
         }
 
         List<String> grade = montarGrade(jogadores);
